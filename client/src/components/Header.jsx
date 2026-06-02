@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { FiSearch, FiUser, FiShoppingBag, FiMenu, FiX } from 'react-icons/fi';
 import MegaMenu from './MegaMenu';
 import { useCart } from '../context/CartContext';
@@ -19,7 +19,11 @@ export default function Header() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [open, setOpen] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const closeTimeoutRef = useRef(null);
+  const navigate = useNavigate();
   const isHome = pathname === '/';
   const isTransparent = isHome && !scrolled;
 
@@ -27,8 +31,35 @@ export default function Header() {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
   }, []);
+
+  const openMenu = (idx) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setOpen(idx);
+  };
+
+  const closeMenu = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => setOpen(null), 150);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   return (
     <header
@@ -46,29 +77,31 @@ export default function Header() {
           LH Furniture
         </Link>
 
-        <nav className="hidden items-center gap-10 lg:flex relative">
+        <nav className="relative hidden items-center gap-10 lg:flex" onMouseLeave={closeMenu}>
           {links.map((l, idx) => (
-            <div key={l.to} className="group relative" onMouseEnter={() => setOpen(idx)} onMouseLeave={() => setOpen(null)}>
-              <NavLink to={l.to} className={({ isActive }) => `text-sm font-semibold tracking-[0.28em] uppercase transition-colors duration-200 ${isActive ? 'text-white' : 'text-white/70 hover:text-white'}`}>
+            <div
+              key={l.to}
+              className="relative"
+              onMouseEnter={() => openMenu(idx)}
+            >
+              <NavLink to={l.to} className={({ isActive }) => `block py-2 text-sm font-semibold tracking-[0.28em] uppercase transition-colors duration-200 ${isActive ? 'text-white' : 'text-white/70 hover:text-white'}`}>
                 {l.label}
               </NavLink>
-              {open === idx && (
-                <div className="absolute left-0 top-full z-40 w-screen">
-                  <div className="mt-2 flex justify-center">
-                    <div className="w-full max-w-7xl px-4">
-                      <MegaMenu keyLabel={l.key} />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
+          {open !== null && (
+            <div className="absolute left-1/2 top-full z-40 w-[calc(100%+200px)] -translate-x-1/2 px-4 md:px-6 lg:px-8">
+              <div className="mx-auto w-full max-w-7xl mt-0">
+                <MegaMenu keyLabel={links[open].key} />
+              </div>
+            </div>
+          )}
         </nav>
 
         <div className="flex items-center gap-5">
-          <Link to="/shop" className="text-white/70 hover:text-white transition-colors duration-200" aria-label="Search">
-            <FiSearch size={20} />
-          </Link>
+          <button type="button" onClick={() => setSearchOpen(!searchOpen)} className="text-white/70 hover:text-white transition-colors duration-200" aria-label="Search">
+            {searchOpen ? <FiX size={20} /> : <FiSearch size={20} />}
+          </button>
           <Link to={user ? '/account' : '/login'} className="text-white/70 hover:text-white transition-colors duration-200" aria-label="Account">
             <FiUser size={20} />
           </Link>
@@ -99,6 +132,27 @@ export default function Header() {
             </Link>
           ))}
         </nav>
+      )}
+
+      {/* Search Overlay */}
+      {searchOpen && (
+        <div className="absolute left-0 top-full z-40 w-full bg-cream border-b border-beige-dark shadow-lg py-8 px-4">
+          <div className="mx-auto max-w-3xl relative animate-fade-in-up">
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                placeholder="Search for furniture, collections, or materials..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="w-full border-b-2 border-charcoal/20 bg-transparent py-3 pr-12 text-lg text-charcoal placeholder-charcoal/40 focus:border-sage focus:outline-none transition-colors"
+              />
+              <button type="submit" className="absolute right-0 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-sage p-2 transition-colors">
+                <FiSearch size={24} />
+              </button>
+            </form>
+          </div>
+        </div>
       )}
     </header>
   );

@@ -29,18 +29,30 @@ export default function MegaMenu({ keyLabel }) {
   const columns = MENU_DATA[keyLabel] || MENU_DATA.SHOP;
 
   return (
-    <div className="absolute left-0 top-full mt-2 w-screen max-w-7xl px-4">
       <div className="mx-auto w-full rounded-b-lg bg-white shadow-lg ring-1 ring-black/5">
         <div className="grid grid-cols-2 gap-6 p-6 md:grid-cols-6">
           {columns.map((col, i) => (
             <div key={i} className="min-w-[140px]">
               <div className="text-sm font-semibold text-charcoal mb-3">{col.title}</div>
               <ul className="space-y-2 text-sm text-charcoal/70">
-                {col.items.map((it) => (
-                  <li key={it}>
-                    <Link to={`/shop?category=${encodeURIComponent(it)}`} className="hover:text-sage">{it}</Link>
-                  </li>
-                ))}
+                {col.items.map((it) => {
+                  // If it's a direct service link (from ABOUT, CONTACT, etc) keep it as is if it starts with /
+                  // Actually in MegaMenu, ABOUT items are like "Our Story", CONTACT items are "Contact Us"
+                  // Let's create a helper link generator to avoid breaking service links.
+                  let linkTo = `/collections/${it.toLowerCase().replace(/\s+/g, '-')}`;
+                  if (it === 'Contact Us') linkTo = '/contact';
+                  if (it === 'FAQ') linkTo = '/faq';
+                  if (it === 'Warranty') linkTo = '/warranty';
+                  if (it === 'Showroom') linkTo = '/about';
+                  if (it === 'Careers') linkTo = '/about';
+                  if (it === 'Our Story' || it === 'Craftsmanship' || it === 'Sustainability') linkTo = '/about';
+                  
+                  return (
+                    <li key={it}>
+                      <Link to={linkTo} className="hover:text-sage transition-colors">{it}</Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -53,6 +65,5 @@ export default function MegaMenu({ keyLabel }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }

@@ -1,58 +1,110 @@
 import { Link } from 'react-router-dom';
+// Background image located in public folder, referenced directly in style
 import { motion } from 'framer-motion';
 import { FiHome, FiMoon, FiUsers, FiArchive, FiSun } from 'react-icons/fi';
 
-const icons = {
-  'Living Room': FiHome,
-  Bedroom: FiMoon,
-  Dining: FiUsers,
-  Storage: FiArchive,
-  Decor: FiSun,
-  Office: FiArchive,
-  Outdoor: FiSun,
-};
-
-const defaults = [
-  { name: 'LIVING ROOM', slug: 'Living Room', tagline: 'Discover comfort' },
-  { name: 'BEDROOM', slug: 'Bedroom', tagline: 'Rest in style' },
-  { name: 'DINING ROOM', slug: 'Dining', tagline: 'Gather together' },
-  { name: 'STORAGE', slug: 'Storage', tagline: 'Organize beautifully' },
-  { name: 'DECOR', slug: 'Decor', tagline: 'Add the finishing touch' },
+const categories = [
+  {
+    name: 'Living Room',
+    tagline: 'Discover comfort',
+    slug: 'living-room',
+    icon: FiHome,
+    img: '/sofa.png',
+    color: 'from-stone-800/80',
+  },
+  {
+    name: 'Bedroom',
+    tagline: 'Rest in style',
+    slug: 'bedroom',
+    icon: FiMoon,
+    img: '/bed.png',
+    color: 'from-slate-900/80',
+  },
+  {
+    name: 'Dining Room',
+    tagline: 'Gather together',
+    slug: 'dining',
+    icon: FiUsers,
+    img: '/dinning.png',
+    color: 'from-zinc-800/80',
+  },
+  {
+    name: 'Storage',
+    tagline: 'Organize beautifully',
+    slug: 'storage',
+    icon: FiArchive,
+    img: '/storage.png',
+    color: 'from-neutral-900/80',
+  },
+  {
+    name: 'Decor',
+    tagline: 'Finishing touches',
+    slug: 'decor',
+    icon: FiSun,
+    img: '/decors.png',
+    color: 'from-amber-900/70',
+  },
 ];
 
-export default function CategoryBar({ categories }) {
-  const items = categories?.length
-    ? categories.slice(0, 5).map((c) => ({
-        name: c.name.toUpperCase().replace('DINING', 'DINING ROOM'),
-        slug: c.slug,
-        tagline: c.tagline,
-      }))
-    : defaults;
-
+export default function CategoryBar() {
   return (
-    <section className="bg-beige py-12">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 md:grid-cols-5 md:gap-0 md:px-8">
-        {items.map((cat, i) => {
-          const Icon = icons[cat.slug] || FiHome;
-          return (
-            <motion.div
-              key={cat.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Link
-                to={`/shop?category=${encodeURIComponent(cat.slug)}`}
-                className="group flex flex-col items-center border-r border-charcoal/5 px-4 py-6 text-center last:border-0 hover:bg-beige-dark/50 transition-colors"
+    <section className="relative min-h-[340px] py-16 overflow-hidden" style={{backgroundImage: "url('/shop-backgr.png')", backgroundSize: 'cover', backgroundPosition: 'center'}}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="mx-auto max-w-7xl px-4 md:px-8 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 flex items-end justify-between"
+        >
+          <div>
+            <p className="text-xs tracking-[0.4em] uppercase text-sage font-semibold mb-2">Explore</p>
+            <h2 className="font-serif text-3xl font-semibold text-white">Shop by Room</h2>
+          </div>
+          <Link to="/shop" className="text-xs text-white/50 hover:text-sage tracking-widest uppercase transition-colors">
+            View All →
+          </Link>
+        </motion.div>
+
+        {/* Card Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {categories.map((cat, i) => {
+            const Icon = cat.icon;
+            return (
+              <motion.div
+                key={cat.slug}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.09, duration: 0.5 }}
+                whileHover={{ y: -6 }}
               >
-                <Icon className="mb-4 text-2xl text-sage transition-transform group-hover:scale-110" strokeWidth={1} />
-                <span className="text-xs font-bold tracking-widest">{cat.name}</span>
-                <span className="mt-1 text-xs text-charcoal/50">{cat.tagline}</span>
-              </Link>
-            </motion.div>
-          );
-        })}
+                <Link
+                  to={`/collections/${cat.slug}`}
+                  className="group relative block h-64 overflow-hidden rounded-xl bg-black/20 backdrop-blur-sm"
+                >
+                  {/* Image */}
+                  <img
+                    src={cat.img}
+                    alt={cat.name}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} to-transparent`} />
+                  {/* Content */}
+                  <div className="absolute inset-x-0 bottom-0 p-5 bg-black/30 backdrop-blur-sm rounded-b-xl">
+                    <Icon className="text-white/80 mb-2" size={20} strokeWidth={1.5} />
+                    <p className="text-white font-semibold text-sm tracking-wide">{cat.name}</p>
+                    <p className="text-white/60 text-xs mt-0.5 group-hover:text-white/90 transition-colors">{cat.tagline}</p>
+                  </div>
+                  {/* Hover border glow */}
+                  <div className="absolute inset-0 rounded-xl border border-white/0 group-hover:border-white/20 transition-all duration-500" />
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

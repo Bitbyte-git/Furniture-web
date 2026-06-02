@@ -7,9 +7,9 @@ const sampleMediaContent = {
     // Replace with your own video URL or local path (e.g., '/videos/your-video.mp4')
     src: '/fur-vid.mp4',
     // Poster image shown before video plays (e.g., '/images/video-poster.jpg')
-    poster: '/red-back-fur.png',
+    poster: 'green-fur-back.png',
     // Background image — place file in client/public/green-fur-back.png
-    background: '/red-back-fur.png',
+    background: 'green-fur-back.png',
     title: 'Luxury Furniture Collections',
     date: 'Premium Experience',
     scrollToExpand: 'Scroll to Expand',

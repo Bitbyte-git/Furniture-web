@@ -21,7 +21,7 @@ export default function Cart() {
         <h1 className="section-heading mb-10">Shopping Cart</h1>
         <div className="space-y-6">
           {items.map((item) => {
-            const img = item.productId?.mainImage || item.productId?.images?.[0];
+            const img = item.productId?.mainImage || item.productId?.images?.[0] || '/background-fur.png';
             const pid = item.productId?._id || item.productId;
             return (
               <div key={pid} className="flex gap-6 border-b border-charcoal/10 pb-6">

@@ -189,11 +189,7 @@ const banners = [
 
 async function seed() {
   await connectDB();
-  const productCount = await Product.countDocuments();
-  if (productCount > 0) {
-    console.log('Database already seeded. Skipping.');
-    process.exit(0);
-  }
+  console.log('Clearing existing seed data...');
   await Promise.all([User.deleteMany({}), Product.deleteMany({}), Banner.deleteMany({})]);
 
   const adminHash = await User.hashPassword('Admin@123');

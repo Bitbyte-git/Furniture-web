@@ -43,7 +43,7 @@ export default function ProductDetail() {
     return <div className="flex min-h-[50vh] items-center justify-center">Loading...</div>;
   }
 
-  const image = product.mainImage || product.images?.[0];
+  const image = product.mainImage || product.images?.[0] || '/background-fur.png';
 
   return (
     <div className="bg-cream py-16">

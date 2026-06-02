@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import HeroSection from '../components/HeroSection';
 import CategoryBar from '../components/CategoryBar';
 import AboutSection from '../components/AboutSection';
-import BestSellers from '../components/BestSellers';
-import PromoSection from '../components/PromoSection';
+// Removed unused ExpandingCollections import
 import Newsletter from '../components/Newsletter';
+import ScrollShowcaseSection from '../components/ScrollShowcaseSection';
+import MarqueeTicker from '../components/MarqueeTicker';
 import api from '../api/axios';
 
 export default function Home() {
@@ -19,8 +20,8 @@ export default function Home() {
       <HeroSection />
       <CategoryBar categories={categories} />
       <AboutSection />
-      <BestSellers />
-      <PromoSection />
+      <MarqueeTicker />
+      <ScrollShowcaseSection />
       <Newsletter />
     </>
   );
